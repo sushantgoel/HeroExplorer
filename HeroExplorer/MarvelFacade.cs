@@ -23,20 +23,28 @@ namespace HeroExplorer
 
         public static async Task populateMarvelCharactersAsync(ObservableCollection<Character> marvelCharacter)
         {
-            var chacractersDataWrapper = await getCharacterDataWrapperAsync();
-
-            var characters = chacractersDataWrapper.data.results;
-
-            foreach (var character in characters)
+            try
             {
-                if (character.thumbnail != null && character.thumbnail.path != "" && character.thumbnail.path != imageNotAvailable)
-                {
-                    character.thumbnail.small = string.Format("{0}/standard_small.{1}", character.thumbnail.path, character.thumbnail.extension);
-                    character.thumbnail.large = string.Format("{0}/portrait_xlarge.{1}", character.thumbnail.path, character.thumbnail.extension);
-                    marvelCharacter.Add(character);
+                var chacractersDataWrapper = await getCharacterDataWrapperAsync();
+                var characters = chacractersDataWrapper.data.results;
 
+                foreach (var character in characters)
+                {
+                    if (character.thumbnail != null && character.thumbnail.path != "" && character.thumbnail.path != imageNotAvailable)
+                    {
+                        character.thumbnail.small = string.Format("{0}/standard_small.{1}", character.thumbnail.path, character.thumbnail.extension);
+                        character.thumbnail.large = string.Format("{0}/portrait_xlarge.{1}", character.thumbnail.path, character.thumbnail.extension);
+                        marvelCharacter.Add(character);
+
+                    }
                 }
             }
+            catch (Exception)
+            {
+
+                return;
+            }
+
         }
         private async static Task<CharacterDataWrapper> getCharacterDataWrapperAsync()
         {

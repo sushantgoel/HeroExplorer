@@ -21,7 +21,9 @@
         </Grid.ColumnDefinitions>
 
         <ListView Name="MasterListview"
-                  ItemsSource="{x:Bind marvelCharacters}">
+                  ItemsSource="{x:Bind marvelCharacters}"
+                  IsItemClickEnabled="True"
+                  ItemClick="MasterListview_ItemClick">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="data:Character">
                     <StackPanel Orientation="Horizontal" Margin="10,5,0,5">
@@ -39,8 +41,29 @@
             </ListView.ItemTemplate>
             
         </ListView>
-        <Grid Name="DetailGrid" Grid.Row="0" Grid.Column="1"> 
-            
+        <Grid Name="DetailGrid" Grid.Row="0" Grid.Column="1" Margin="10,0,10,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Image Grid.Column="0" Grid.RowSpan="2" 
+                       Name="DetailImage"
+                       VerticalAlignment="Top"/>
+                <TextBlock Name="DetailNameTextBlock" Margin="10,0,0,0" Grid.Column="1" FontSize="32"/>
+                <TextBlock Name="DetailDescription" Margin="10,0,0,0" Grid.Row="1" Grid.Column="1" TextWrapping="Wrap"/>
+            </Grid>
         </Grid>
         <TextBlock Text="Data provided by Marvel. © 2016 MARVEL" 
                    Grid.Row="2" Grid.ColumnSpan="2" 
