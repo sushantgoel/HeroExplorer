@@ -27,10 +27,12 @@ namespace HeroExplorer
     public sealed partial class MainPage : Page
     {
         public ObservableCollection<Character> marvelCharacters { get; set; }
+        public ObservableCollection<ComicResult> marvelComics { get; set; }
         public MainPage()
         {
             this.InitializeComponent();
             marvelCharacters = new ObservableCollection<Character>();
+            marvelComics = new ObservableCollection<ComicResult>();
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
@@ -46,7 +48,7 @@ namespace HeroExplorer
             MyProgressRing.Visibility = Visibility.Collapsed;
         }
 
-        private void MasterListview_ItemClick(object sender, ItemClickEventArgs e)
+        private async void MasterListview_ItemClick(object sender, ItemClickEventArgs e)
         {
             var selectedCharacter = (Character) e.ClickedItem;
             DetailNameTextBlock.Text = selectedCharacter.name;
@@ -56,7 +58,16 @@ namespace HeroExplorer
             Uri uri = new Uri(selectedCharacter.thumbnail.large, UriKind.Absolute);
             largeImage.UriSource = uri;
             DetailImage.Source = largeImage;
-             
+
+            marvelComics.Clear();
+            await MarvelFacade.populateMarvelComicsAsync(marvelComics,selectedCharacter.id);
+            MyProgressRing.IsActive = false;
+            MyProgressRing.Visibility = Visibility.Collapsed;
+        }
+
+        private void GridView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+
         }
     }
 }

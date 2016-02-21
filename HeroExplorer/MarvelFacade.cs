@@ -32,7 +32,7 @@ namespace HeroExplorer
                 {
                     if (character.thumbnail != null && character.thumbnail.path != "" && character.thumbnail.path != imageNotAvailable)
                     {
-                        character.thumbnail.small = string.Format("{0}/standard_small.{1}", character.thumbnail.path, character.thumbnail.extension);
+                        character.thumbnail.small = string.Format("{0}/portrait_medium.{1}", character.thumbnail.path, character.thumbnail.extension);
                         character.thumbnail.large = string.Format("{0}/portrait_xlarge.{1}", character.thumbnail.path, character.thumbnail.extension);
                         marvelCharacter.Add(character);
 
@@ -46,23 +46,41 @@ namespace HeroExplorer
             }
 
         }
+
+        public static async Task populateMarvelComicsAsync(ObservableCollection<ComicResult> marvelComics,int characterId)
+        {
+            try
+            {
+                var comicDataWrapper = await getComicDataWrapperAsync(characterId);
+                var comics = comicDataWrapper.data.results;
+
+                foreach (var comic in comics)
+                {
+                    if (comic.thumbnail != null && comic.thumbnail.path != "" && comic.thumbnail.path != imageNotAvailable)
+                    {
+                        comic.thumbnail.small = string.Format("{0}/standard_small.{1}", comic.thumbnail.path, comic.thumbnail.extension);
+                        comic.thumbnail.large = string.Format("{0}/portrait_xlarge.{1}", comic.thumbnail.path, comic.thumbnail.extension);
+                        marvelComics.Add(comic);
+
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                return;
+            }
+
+        }
+
         private async static Task<CharacterDataWrapper> getCharacterDataWrapperAsync()
         {
-            //Assemble the URL 
             Random random = new Random();
-            var offset = random.Next(maxChar);
+            var offset = random.Next(maxChar);                                 
 
-            //Get the MD5 Hash
-            var timeStamp = DateTime.Now.Ticks.ToString();
-            var hash = createHash(timeStamp);
+            string url = string.Format("http://gateway.marvel.com:80/v1/public/characters?limit=10&offset={0}", offset);
 
-            string url = string.Format("http://gateway.marvel.com:80/v1/public/characters?limit=10&offset={0}&apikey={1}&ts={2}&hash={3}", offset, publicKey, timeStamp, hash);
-
-            //Call out to Marvel
-            HttpClient http = new HttpClient();
-            var response = await http.GetAsync(url);
-            var jsonMessage = await response.Content.ReadAsStringAsync();
-
+            var jsonMessage = await callMarvelAsync(url);
             //Reponse ->string/json -> deserialize
             var serializer = new DataContractJsonSerializer(typeof(CharacterDataWrapper));
             var ms = new MemoryStream(Encoding.UTF8.GetBytes(jsonMessage));
@@ -87,5 +105,40 @@ namespace HeroExplorer
             var res = CryptographicBuffer.EncodeToHexString(hashed);
             return res;
         }
+
+        private async static Task<ComicDataWrapper> getComicDataWrapperAsync(int characterId)
+        {
+            string url = string.Format("http://gateway.marvel.com:80/v1/public/comics?characters={0}&limit=10", characterId); 
+            var jsonMessage = await callMarvelAsync(url);
+
+            //Reponse ->string/json -> deserialize
+            var serializer = new DataContractJsonSerializer(typeof(ComicDataWrapper));
+            var ms = new MemoryStream(Encoding.UTF8.GetBytes(jsonMessage));
+
+            var result = (ComicDataWrapper) serializer.ReadObject(ms);
+
+            return result;
+        }
+
+        private async static Task<string> callMarvelAsync(string url)
+        {
+            //Assemble the URL 
+            Random random = new Random();
+            var offset = random.Next(maxChar);
+
+            //Get the MD5 Hash
+            var timeStamp = DateTime.Now.Ticks.ToString();
+            var hash = createHash(timeStamp);
+
+            string completeUrl = string.Format("{0}&apikey={1}&ts={2}&hash={3}", url, publicKey, timeStamp, hash);
+
+            //Call out to Marvel
+            HttpClient http = new HttpClient();
+            var response = await http.GetAsync(completeUrl);
+            var jsonMessage = await response.Content.ReadAsStringAsync();
+
+            return jsonMessage;
+        }
+
     }
 }

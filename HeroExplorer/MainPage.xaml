@@ -64,6 +64,14 @@
                 <TextBlock Name="DetailNameTextBlock" Margin="10,0,0,0" Grid.Column="1" FontSize="32"/>
                 <TextBlock Name="DetailDescription" Margin="10,0,0,0" Grid.Row="1" Grid.Column="1" TextWrapping="Wrap"/>
             </Grid>
+
+            <GridView Grid.Row="1" ItemsSource="{x:Bind marvelComics}" IsItemClickEnabled="True" ItemClick="GridView_ItemClick">
+                <GridView.ItemTemplate>
+                    <DataTemplate x:DataType="data:ComicResult">
+                        <Image Source="{x:Bind thumbnail.small}" Width="100" Height="150"/>
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+            </GridView>
         </Grid>
         <TextBlock Text="Data provided by Marvel. © 2016 MARVEL" 
                    Grid.Row="2" Grid.ColumnSpan="2" 
