@@ -37,9 +37,22 @@ namespace HeroExplorer
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
+
+            var storageFile = await Windows.Storage.StorageFile.GetFileFromApplicationUriAsync(
+                new Uri("ms-appx:///VoiceCommandDictionary.xml"));
+            await Windows.ApplicationModel.VoiceCommands.VoiceCommandDefinitionManager
+                .InstallCommandDefinitionsFromStorageFileAsync(storageFile);
+
+            Refresh();
+        }
+
+        public async void Refresh()
+        {
             MyProgressRing.IsActive = true;
             MyProgressRing.Visibility = Visibility.Visible;
-            while (marvelCharacters.Count<10)
+
+            marvelCharacters.Clear();
+            while (marvelCharacters.Count < 10)
             {
                 Task task = MarvelFacade.populateMarvelCharactersAsync(marvelCharacters);
                 await task;
