@@ -50,6 +50,13 @@ namespace HeroExplorer
 
         private async void MasterListview_ItemClick(object sender, ItemClickEventArgs e)
         {
+            MyProgressRing.IsActive = true;
+            MyProgressRing.Visibility = Visibility.Visible;
+
+            ComicDetailDescription.Text = "";
+            ComicDetailNameTextBlock.Text = "";
+            ComicDetailImage.Source = null;
+
             var selectedCharacter = (Character) e.ClickedItem;
             DetailNameTextBlock.Text = selectedCharacter.name;
             DetailDescription.Text = selectedCharacter.description;
@@ -67,6 +74,22 @@ namespace HeroExplorer
 
         private void GridView_ItemClick(object sender, ItemClickEventArgs e)
         {
+
+        }
+
+        private void ComicsGridView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            var selectedComic = (ComicResult) e.ClickedItem;
+            ComicDetailNameTextBlock.Text = selectedComic.title;
+            if (selectedComic.description!=null)
+            {
+                ComicDetailDescription.Text = selectedComic.description;
+            }
+
+            var largeImage = new BitmapImage();
+            Uri uri = new Uri(selectedComic.thumbnail.large, UriKind.Absolute);
+            largeImage.UriSource = uri;
+            ComicDetailImage.Source = largeImage;
 
         }
     }
